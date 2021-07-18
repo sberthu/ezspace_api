@@ -1,0 +1,22 @@
+version: "2"
+services:
+  node:
+    image: "sberthu/nodepm2"
+    #build: .
+    user: "node"
+    restart: always
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./app:/home/node/app/
+      - ./init:/init
+    ports:
+      - "8300:8000"
+    working_dir: "/init"
+    command: /bin/sh -c "/init/./start.sh"
+    networks:
+      - "sberthu/network"
+networks:        
+  "sberthu/network":
+    external: true          
+
