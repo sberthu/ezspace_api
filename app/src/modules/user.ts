@@ -1,38 +1,42 @@
 import { FastifyRequest, FastifyReply, FastifyInstance, FastifyPluginAsync, FastifyPluginCallback } from "fastify";
-import { ConfigInterface } from "src/interfaces/config_interface";
+import { ConfigInterface } from "../interfaces/config_interface";
 import { boom } from 'boom';
 import { Tools } from "./tools";
+import { UserInterface } from "src/interfaces/user_interface";
+import { LocalizationInterface } from "src/interfaces/localization_interface";
 
 export class User {
-    static instance: User;
-    constructor(
-        private readonly config: ConfigInterface
-    ) {
-        User.instance = this;
-    }
-    protected convertUser(user: any): any {
-        return Tools.parseProperties(user, ['picture', 'address', 'services', 'job_type', 'localization', 'employee_type', 'roles']);
-    }
-    protected cleanUserIdArray(sz_user_ids: Array<string>, offset: number, expected_size:number): Array<number> {
-        let user_ids = Tools.cleanRedisIdArray(sz_user_ids, offset, expected_size);
-        return user_ids.filter(id => id >= this.config.min_user_id);
-    }
 
-    public async getUser(user_id: number): Promise<string> {
-        let user = await this.config.redis.getHashSet(`users:${user_id}:user`);
-        //console.log(user);
-        return this.convertUser(user);
+    protected static convertUser(user: any): UserInterface {
+        return Tools.parseProperties(user, ['standby', 'flow_requested', 'visibility', 'status', 'picture', 'address', 'services', 'job_type', 'localization', 'employee_type', 'roles']);
     }
-    public async getUsers(): Promise<Array<number>> {
-        return this.cleanUserIdArray(await this.config.redis.listSubKeys(`users`), 3, 5);
+    protected static cleanUserIdArray(_config:ConfigInterface, sz_user_ids: Array<string>, offset: number, expected_size:number): Array<number> {
+        const user_ids = Tools.cleanRedisIdArray(sz_user_ids, offset, expected_size);
+        return user_ids.filter(id => id >= _config.min_user_id);
     }
-    public async getUsersForGroupId(group_id: number): Promise<Array<number>> {
-        return this.cleanUserIdArray(await this.config.redis.listSubKeys(`groups:${group_id}:users`), 5, 6);
+    public static async getUser(_config:ConfigInterface,user_id: number): Promise<UserInterface> {
+        const user = await _config.redis.getHashSet(`users:${user_id}:user`);
+        return User.convertUser(user);
     }
-    public registerRoutes(): void {
-        this.config.fastify.route({
+    public static async getVisibilityForUserId(_config:ConfigInterface,user_id: number): Promise<boolean> {
+        const user:UserInterface = await User.getUser(_config, user_id);
+        return user.visibility;
+    }
+    public static async getFlowForUserId(_config:ConfigInterface,user_id: number): Promise<number> {
+        const user:UserInterface = await User.getUser(_config, user_id);
+        return user.flow;
+    }
+    public static async getLocalizationForUserId(_config:ConfigInterface,user_id: number): Promise<LocalizationInterface> {
+        const user:UserInterface = await User.getUser(_config, user_id);
+        return user.localization;
+    }
+    public static async getUsers(_config:ConfigInterface): Promise<Array<number>> {
+        return User.cleanUserIdArray(_config, await _config.redis.listSubKeys(`users`), 3, 5);
+    }
+    public static registerRoutes(_config:ConfigInterface): void {
+        _config.fastify.route({
             method: 'GET',
-            url: `${this.config.root_uri}/user/:user_id`,
+            url: `${_config.root_uri}/user/:user_id/visibility`,
             schema: {
                 params: {
                     user_id: { type: 'number' }
@@ -45,7 +49,98 @@ export class User {
                         type: 'object',
                         properties: {
                             id: { type: 'number' },
-                            status: { type: 'string' },
+                            visibility: { type: 'boolean' }
+                        }
+                    }
+                }
+            },
+            handler: async (request: FastifyRequest, reply: any) => {
+                try {
+                    const user_id:number = parseInt(request.params['user_id']);
+                    const visibility:boolean = await User.getVisibilityForUserId(_config, user_id);
+                    return {id:user_id, visibility: visibility};
+                } catch (err) {
+                    throw boom.boomify(err)
+                }
+            }
+        });              
+        _config.fastify.route({
+            method: 'GET',
+            url: `${_config.root_uri}/user/:user_id/flow`,
+            schema: {
+                params: {
+                    user_id: { type: 'number' }
+                },
+                body: {
+                    type: 'null'
+                },
+                response: {
+                    200: {
+                        type: 'object',
+                        properties: {
+                            id: { type: 'number' },
+                            flow: { type: 'number' }
+                        }
+                    }
+                }
+            },
+            handler: async (request: FastifyRequest, reply: any) => {
+                try {
+                    const user_id:number = parseInt(request.params['user_id']);
+                    const flow:number = await User.getFlowForUserId(_config, user_id);
+                    return {id:user_id, flow: flow};
+                } catch (err) {
+                    throw boom.boomify(err)
+                }
+            }
+        });              
+        _config.fastify.route({
+            method: 'GET',
+            url: `${_config.root_uri}/user/:user_id/localization`,
+            schema: {
+                params: {
+                    user_id: { type: 'number' }
+                },
+                body: {
+                    type: 'null'
+                },
+                response: {
+                    200: {
+                        type: 'object',
+                        properties: {
+                            id: { type: 'number' },
+                            lat: { type: 'number' },
+                            lng: { type: 'number' }
+                        }
+                    }
+                }
+            },
+            handler: async (request: FastifyRequest, reply: any) => {
+                try {
+                    const user_id:number = parseInt(request.params['user_id']);
+                    const localization:LocalizationInterface = await User.getLocalizationForUserId(_config, user_id);
+                    return {id:user_id, lat: localization.lat, lng:localization.lng};
+                } catch (err) {
+                    throw boom.boomify(err)
+                }
+            }
+        });              
+        _config.fastify.route({
+            method: 'GET',
+            url: `${_config.root_uri}/user/:user_id`,
+            schema: {
+                params: {
+                    user_id: { type: 'number' }
+                },
+                body: {
+                    type: 'null'
+                },
+                response: {
+                    200: {
+                        type: 'object',
+                        properties: {
+                            id: { type: 'number' },
+                            status: { type: 'boolean' },
                             name: { type: 'string' },
                             firstname: { type: 'string' },
                             email: { type: 'string' },
@@ -55,10 +150,23 @@ export class User {
                             birthday: { type: 'string' },
                             localization: {
                                 type: 'object',
-                                lat: { type: 'number' },
-                                lng: { type: 'number' },
+                                properties: {
+                                    lat: { type: 'number' },
+                                    lng: { type: 'number' }
+                                }
                             },
-                            address: { type: 'array' },
+                            address: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    properties: {
+                                        address_line1: { type: 'string' },
+                                        address_line2: { type: 'string' },
+                                        locality: { type: 'string' },
+                                        postal_code: { type: 'string' }
+                                    }, "additionalProperties": {type: 'string'}
+                                }
+                            },
                             company: { type: 'number' },
                             services: {
                                 type: 'array',
@@ -105,15 +213,15 @@ export class User {
             },
             handler: async (request: FastifyRequest, reply: any) => {
                 try {
-                    return await this.getUser(parseInt(request.params['user_id']));
+                    return await User.getUser(_config, parseInt(request.params['user_id']));
                 } catch (err) {
                     throw boom.boomify(err)
                 }
             }
         });
-        this.config.fastify.route({
+        _config.fastify.route({
             method: 'GET',
-            url: `${this.config.root_uri}/users`,
+            url: `${_config.root_uri}/users`,
             schema: {
                 body: {
                     type: 'null'
@@ -127,12 +235,12 @@ export class User {
             },
             handler: async (request: FastifyRequest, reply: any) => {
                 try {
-                    return await this.getUsers();
+                    return await User.getUsers(_config);
                 } catch (err) {
                     throw boom.boomify(err)
                 }
             }
-        })
+        });
     }
 
 }

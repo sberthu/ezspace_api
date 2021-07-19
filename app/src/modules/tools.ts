@@ -5,7 +5,18 @@ export class Tools {
         if (typeof obj === 'object' && obj !== null) {
             properties.forEach(prop => {
                 if (obj.hasOwnProperty(prop) && obj[prop] != null) {
-                    obj[prop] = JSON.parse(obj[prop]);                }                
+                    obj[prop] = JSON.parse(obj[prop]);
+                }                
+            });
+        }
+        return obj;
+    }
+    public static removeProperties(obj:any, properties:string[]):any {  
+        if (typeof obj === 'object' && obj !== null) {
+            properties.forEach(prop => {
+                if (obj.hasOwnProperty(prop)) {
+                    delete obj[prop];
+                }                
             });
         }
         return obj;

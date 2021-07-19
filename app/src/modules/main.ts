@@ -6,6 +6,7 @@ import { Token, Token as token}  from './token';
 import {ConfigInterface} from '../interfaces/config_interface'
 import { User } from "./user";
 import { Group } from "./group";
+import { Host } from "./host";
 
 /*const cors = require('fastify-cors');
 */
@@ -33,11 +34,10 @@ export class Main {
       preflightContinue: true */
     /*});*/
 
-    let user = new User(_config);
     //_config.fastify.register(user.get_user);
-    user.registerRoutes();
-    let group = new Group(_config);
-    group.registerRoutes();
+    User.registerRoutes(_config);
+    Group.registerRoutes(_config);
+    Host.registerRoutes(_config);
    /*  fastify.route({
       method: 'OPTIONS',
       path: '*'

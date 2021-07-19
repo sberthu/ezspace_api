@@ -3,15 +3,17 @@ services:
   node:
     image: "sberthu/nodepm2"
     #build: .
-    user: "node"
+    user: "root"
     restart: always
     environment:
       - NODE_ENV=development
     volumes:
       - ./app:/home/node/app/
+      - './.bashrc:/root/.bashrc'
       - ./init:/init
-    ports:
-      - "8300:8000"
+    #pas de port sortant, uniquement appele depuis le reseau sberthu/network par krakend
+    #ports:
+    #  - "8300:8000"
     working_dir: "/init"
     command: /bin/sh -c "/init/./start.sh"
     networks:
