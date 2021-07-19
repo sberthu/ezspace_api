@@ -2,8 +2,9 @@ import { FastifyRequest, FastifyReply, FastifyInstance, FastifyPluginAsync, Fast
 import { ConfigInterface } from "../interfaces/config_interface";
 import { boom } from 'boom';
 import { Tools } from "./tools";
-import { UserInterface } from "src/interfaces/user_interface";
-import { LocalizationInterface } from "src/interfaces/localization_interface";
+import { UserInterface } from "../interfaces/user_interface";
+import { LocalizationInterface } from "../interfaces/localization_interface";
+import { UserSchema } from "../schemas/user_schema";
 
 export class User {
 
@@ -136,79 +137,7 @@ export class User {
                     type: 'null'
                 },
                 response: {
-                    200: {
-                        type: 'object',
-                        properties: {
-                            id: { type: 'number' },
-                            status: { type: 'boolean' },
-                            name: { type: 'string' },
-                            firstname: { type: 'string' },
-                            email: { type: 'string' },
-                            working_group_id: { type: 'number' },
-                            speciality_group_id: { type: 'number' },
-                            picture: { type: 'array' },
-                            birthday: { type: 'string' },
-                            localization: {
-                                type: 'object',
-                                properties: {
-                                    lat: { type: 'number' },
-                                    lng: { type: 'number' }
-                                }
-                            },
-                            address: {
-                                type: 'array',
-                                items: {
-                                    type: 'object',
-                                    properties: {
-                                        address_line1: { type: 'string' },
-                                        address_line2: { type: 'string' },
-                                        locality: { type: 'string' },
-                                        postal_code: { type: 'string' }
-                                    }, "additionalProperties": {type: 'string'}
-                                }
-                            },
-                            company: { type: 'number' },
-                            services: {
-                                type: 'array',
-                                items: {
-                                    id: { type: 'number' },
-                                    machine_name: { type: 'string' },
-                                    name: { type: 'string' }
-                                }
-                            },
-                            function: { type: 'string' },
-                            job_type: {
-                                type: 'array',
-                                items: {
-                                    id: { type: 'number' },
-                                    machine_name: { type: 'string' },
-                                    name: { type: 'string' }
-                                }
-                            },
-                            employee_type: {
-                                type: 'array',
-                                items: {
-                                    id: { type: 'number' },
-                                    machine_name: { type: 'string' },
-                                    name: { type: 'string' }
-                                }
-                            },
-                            roles: {
-                                type: 'array',
-                                items: { type: 'string' }
-                            },
-                            phone: { type: 'string' },
-                            updates: { type: 'string' },
-                            flow_requested: { type: 'boolean' },
-                            flow: { type: 'number' },
-                            visibility: { type: 'boolean' },
-                            standby: { type: 'boolean' },
-                            nb_connexions: { type: 'number' },
-                            last_access_date: { type: 'number' },
-                            created_date: { type: 'number' },
-                            updated_date: { type: 'number' },
-                        }
-                    }
+                    200: UserSchema
                 }
             },
             handler: async (request: FastifyRequest, reply: any) => {

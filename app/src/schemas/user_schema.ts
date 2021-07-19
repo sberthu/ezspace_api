@@ -1,86 +1,8 @@
-{
+import { DefinitionSchema } from "./definitions_schema";
+
+const UserSchema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "definitions": {
-        "AddressInterface": {
-            "properties": {
-                "address_line1": {
-                    "type": "string"
-                },
-                "address_line2": {
-                    "type": "string"
-                },
-                "locality": {
-                    "type": "string"
-                },
-                "organization": {
-                    "type": "string"
-                },
-                "postal_code": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "HourInterface": {
-            "properties": {
-                "comment": {
-                    "type": "string"
-                },
-                "day": {
-                    "type": "number"
-                },
-                "endhours": {
-                    "type": "number"
-                },
-                "starthours": {
-                    "type": "number"
-                }
-            },
-            "type": "object"
-        },
-        "LocalizationInterface": {
-            "properties": {
-                "lat": {
-                    "type": "number"
-                },
-                "lng": {
-                    "type": "number"
-                }
-            },
-            "type": "object"
-        },
-        "PictureInterface": {
-            "properties": {
-                "alt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "number"
-                },
-                "label": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "TermInterface": {
-            "properties": {
-                "id": {
-                    "type": "number"
-                },
-                "machine_name": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        }
-    },
+    "definitions": DefinitionSchema,
     "properties": {
         "address": {
             "items": {
@@ -185,5 +107,5 @@
         }
     },
     "type": "object"
-}
-
+};
+export {UserSchema};

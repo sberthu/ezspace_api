@@ -4,9 +4,10 @@ import { boom } from 'boom';
 import { Tools } from "./tools";
 import { Session } from "./session";
 import { User } from "./user";
-import { UserInterface } from "src/interfaces/user_interface";
-import { GroupInterface } from "src/interfaces/group_interface";
-import { LocalizationInterface } from "src/interfaces/localization_interface";
+import { UserInterface } from "../interfaces/user_interface";
+import { GroupInterface } from "../interfaces/group_interface";
+import { LocalizationInterface } from "../interfaces/localization_interface";
+import { GroupSchema } from "../schemas/group_schema";
 
 export class Group {
     protected static convertGroup(group:any):GroupInterface {
@@ -64,21 +65,7 @@ export class Group {
                     type: 'null'
                 },
                 response: {
-                    200: {
-                        type: 'object',
-                        properties: {
-                            id: { type: 'number' },
-                            label: { type: 'string' },
-                            description: { type: 'string' },
-                            is_private: { type: 'boolean' },
-                            author_id: { type: 'number' },
-                            manager_id: { type: 'number' },
-                            vice_manager_id: { type: 'number' },
-                            role: { type: 'string' },
-                            updated_date: { type: 'number' },
-                            created_date: { type: 'number' },
-                        }
-                      }
+                    200: GroupSchema
                 }
             },
             handler: async (request: FastifyRequest, reply: any) => {
