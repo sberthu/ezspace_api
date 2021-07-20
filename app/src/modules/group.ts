@@ -54,6 +54,9 @@ export class Group {
         }))
         return localizations;
     }
+    public static async setFlowRequest(_config:ConfigInterface, user_id: number): Promise<any> {
+        return await User.setUpdates(_config, user_id, 'flow_requested', `${Date.now()}`);
+    }    
     public static async setUpdateForGroupId(_config:ConfigInterface, author_id:number, group_id:number, keyname:string, value:any): Promise<Array<any>> {
         const user_ids:Array<number> = await Group.getUsersForGroupId(_config, group_id);        
         return await Promise.all(user_ids.map(async (user_id:number) => {
@@ -267,6 +270,31 @@ export class Group {
             handler: async (request: FastifyRequest, reply: any) => {
                 try {
                     return await Group.getLocalizationForGroupId(_config, parseInt(request.params['group_id']));
+                } catch (err) {
+                    throw Boom.boomify(err)
+                }
+            }
+        });
+        _config.fastify.route({
+            method: 'PATCH',
+            url: `${_config.root_uri}/group/:group_id/flowrequest`,
+            schema: {
+                params: {
+                    group_id: { type: 'number' }
+                },
+                body: {
+                    type: 'null'
+                },
+                response: {
+                    204: {
+                        type: 'null'
+                    }
+                }
+            },
+            handler: async (request: FastifyRequest, reply: any) => {
+                try {
+                    await Group.setFlowRequest(_config, parseInt(request.params['group_id']));
+                    return reply.statusCode = 204;                    
                 } catch (err) {
                     throw Boom.boomify(err)
                 }

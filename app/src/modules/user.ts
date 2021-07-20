@@ -87,9 +87,6 @@ export class User {
             await User.setUpdates(_config, user_id, 'flow', flow)]
         );
     }
-    public static async setFlowRequest(_config:ConfigInterface, user_id: number): Promise<any> {
-        return await User.setUpdates(_config, user_id, 'flow_requested', `${Date.now()}`);
-    }
     public static async setUserLocalization(_config:ConfigInterface, user_id: number, lat: number, lng: number): Promise<any> {
         const szLocalization:string  = JSON.stringify({
             lat:lat,
@@ -434,29 +431,6 @@ export class User {
                 try {
                     let user_id:number = Session.getUserId(request);
                     await User.setUserStandby(_config, user_id, request.body['standby']);
-                    return reply.statusCode = 204;                    
-                } catch (err) {
-                    throw Boom.boomify(err)
-                }
-            }
-        });
-        _config.fastify.route({
-            method: 'PATCH',
-            url: `${_config.root_uri}/user/flowrequest`,
-            schema: {
-                body: {
-                    type: 'null'
-                },
-                response: {
-                    204: {
-                        type: 'null'
-                    }
-                }
-            },
-            handler: async (request: FastifyRequest, reply: any) => {
-                try {
-                    let user_id:number = Session.getUserId(request);
-                    await User.setFlowRequest(_config, user_id);
                     return reply.statusCode = 204;                    
                 } catch (err) {
                     throw Boom.boomify(err)
