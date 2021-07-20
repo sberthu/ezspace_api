@@ -7,6 +7,8 @@ import {ConfigInterface} from '../interfaces/config_interface'
 import { User } from "./user";
 import { Group } from "./group";
 import { Host } from "./host";
+import { Space } from "./space";
+import { Entreprise } from "./entreprise";
 
 /*const cors = require('fastify-cors');
 */
@@ -38,6 +40,8 @@ export class Main {
     User.registerRoutes(_config);
     Group.registerRoutes(_config);
     Host.registerRoutes(_config);
+    Space.registerRoutes(_config);
+    Entreprise.registerRoutes(_config);
    /*  fastify.route({
       method: 'OPTIONS',
       path: '*'

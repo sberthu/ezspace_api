@@ -2,40 +2,40 @@ import { FastifyRequest, FastifyReply, FastifyInstance, FastifyPluginAsync, Fast
 import { ConfigInterface } from "../interfaces/config_interface";
 import { boom } from 'boom';
 import { Tools } from "./tools";
-import { HostInterface } from "../interfaces/host_interface";
-import { HostSchema } from "../schemas/host_schema";
+import { EntrepriseInterface } from "../interfaces/entreprise_interface";
+import { EntrepriseSchema } from "../schemas/entreprise_schema";
 
-export class Host {
-    protected static convertHost(host:any):HostInterface {
+export class Entreprise {
+    protected static convertEntreprise(entreprise:any):EntrepriseInterface {
         return Tools.parseProperties(
-            Tools.removeProperties(host, ['import_id','vote']),
-            ['type_of_contract','pictures','is_internal','localization','coverage_picture','hours','type','services','address']);
+            entreprise,
+            ['address']);
     }
-    public static async getHost(_config:ConfigInterface,host_id:number): Promise<HostInterface> {
-        const group = await _config.redis.getHashSet(`hote:${host_id}`);
-        return Host.convertHost(group);
+    public static async getEntreprise(_config:ConfigInterface,entreprise_id:number): Promise<EntrepriseInterface> {
+        const group = await _config.redis.getHashSet(`entreprise:${entreprise_id}`);
+        return Entreprise.convertEntreprise(group);
     }
-    public static async getHosts(_config:ConfigInterface): Promise<Array<number>> {
-        return  Tools.cleanRedisIdArray(await _config.redis.listSubKeys(`hote`), 3, 4);
+    public static async getEntreprises(_config:ConfigInterface): Promise<Array<number>> {
+        return  Tools.cleanRedisIdArray(await _config.redis.listSubKeys(`entreprise`), 3, 4);
     }
     public static registerRoutes(_config:ConfigInterface):void {
         _config.fastify.route({
             method: 'GET',
-            url: `${_config.root_uri}/host/:host_id`,
+            url: `${_config.root_uri}/entreprise/:entreprise_id`,
             schema: {
                 params:{
-                    host_id: {type: 'number'}
+                    entreprise_id: {type: 'number'}
                 },
                 body: {
                     type: 'null'
                 },
                 response: {
-                    200: HostSchema
+                    200: EntrepriseSchema
                 }
             },
             handler: async (request: FastifyRequest, reply: any) => {
                 try {
-                    return await Host.getHost(_config, parseInt(request.params['host_id']));
+                    return await Entreprise.getEntreprise(_config, parseInt(request.params['entreprise_id']));
                 } catch (err) {
                     throw boom.boomify(err)
                 }
@@ -43,7 +43,7 @@ export class Host {
         });
         _config.fastify.route({
             method: 'GET',
-            url: `${_config.root_uri}/hosts`,
+            url: `${_config.root_uri}/entreprises`,
             schema: {
                 body: {
                     type: 'null'
@@ -57,7 +57,7 @@ export class Host {
             },
             handler: async (request: FastifyRequest, reply: any) => {
                 try {                    
-                    return await Host.getHosts(_config);
+                    return await Entreprise.getEntreprises(_config);
                 } catch (err) {
                     throw boom.boomify(err)
                 }
