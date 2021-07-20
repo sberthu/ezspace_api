@@ -1,9 +1,10 @@
 import { FastifyRequest, FastifyReply, FastifyInstance, FastifyPluginAsync, FastifyPluginCallback } from "fastify";
 import { ConfigInterface } from "../interfaces/config_interface";
-import { boom } from 'boom';
 import { Tools } from "./tools";
 import { SpaceInterface } from "../interfaces/space_interface";
 import { SpaceSchema } from "../schemas/space_schema";
+
+import Boom = require('boom');
 
 export class Space {
     protected static convertSpace(space:any):SpaceInterface {
@@ -37,7 +38,7 @@ export class Space {
                 try {
                     return await Space.getSpace(_config, parseInt(request.params['space_id']));
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });
@@ -59,7 +60,7 @@ export class Space {
                 try {                    
                     return await Space.getSpaces(_config);
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });

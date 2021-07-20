@@ -1,9 +1,10 @@
 import { FastifyRequest, FastifyReply, FastifyInstance, FastifyPluginAsync, FastifyPluginCallback } from "fastify";
 import { ConfigInterface } from "../interfaces/config_interface";
-import { boom } from 'boom';
 import { Tools } from "./tools";
 import { HostInterface } from "../interfaces/host_interface";
 import { HostSchema } from "../schemas/host_schema";
+
+import Boom = require('boom');
 
 export class Host {
     protected static convertHost(host:any):HostInterface {
@@ -37,7 +38,7 @@ export class Host {
                 try {
                     return await Host.getHost(_config, parseInt(request.params['host_id']));
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });
@@ -59,7 +60,7 @@ export class Host {
                 try {                    
                     return await Host.getHosts(_config);
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });

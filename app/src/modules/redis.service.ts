@@ -12,6 +12,7 @@ export class RedisService {
   private async_hgetall:Function;
   private async_get:Function;
   private async_set:Function;
+  private async_hset:Function;
   private async_keys:Function;
 
   static getInstance(_config:ConfigInterface) {
@@ -27,6 +28,7 @@ export class RedisService {
     this.async_hgetall = promisify(this.redisClient.hgetall).bind(this.redisClient);    
     this.async_get = promisify(this.redisClient.get).bind(this.redisClient);    
     this.async_set = promisify(this.redisClient.set).bind(this.redisClient);    
+    this.async_hset = promisify(this.redisClient.hset).bind(this.redisClient);    
     this.async_keys = promisify(this.redisClient.keys).bind(this.redisClient);    
   }
 
@@ -39,6 +41,21 @@ export class RedisService {
         return this.async_set(this.computeFullKey(path), value, "EX", Number.parseInt(expire))
       }else {
         return this.async_set(this.computeFullKey(path), value)
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  public setHashValue(path: string, hash:string, value: any, expire: any = null): Promise<any> {
+    try {
+      if (typeof value !== "string") {
+        value = JSON.stringify(value)
+      }
+      if (expire) {
+        return this.async_hset(this.computeFullKey(path), hash, value, "EX", Number.parseInt(expire))
+      }else {
+        return this.async_hset(this.computeFullKey(path), hash, value)
       }
     } catch (e) {
       throw e;

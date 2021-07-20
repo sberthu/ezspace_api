@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply, FastifyInstance, FastifyPluginAsync, FastifyPluginCallback } from "fastify";
 import { ConfigInterface } from "../interfaces/config_interface";
-import { boom } from 'boom';
 import { Tools } from "./tools";
 import { Session } from "./session";
 import { User } from "./user";
@@ -8,6 +7,8 @@ import { UserInterface } from "../interfaces/user_interface";
 import { GroupInterface } from "../interfaces/group_interface";
 import { LocalizationInterface } from "../interfaces/localization_interface";
 import { GroupSchema } from "../schemas/group_schema";
+
+import Boom = require('boom');
 
 export class Group {
     protected static convertGroup(group:any):GroupInterface {
@@ -72,7 +73,7 @@ export class Group {
                 try {
                     return await Group.getGroup(_config, parseInt(request.params['group_id']));
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });
@@ -94,7 +95,7 @@ export class Group {
                 try {                    
                     return await Group.getGroups(_config);
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });
@@ -119,7 +120,7 @@ export class Group {
                 try {
                     return await Group.getUsersForGroupId(_config, parseInt(request.params['group_id']));
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });
@@ -142,7 +143,7 @@ export class Group {
                     let user_id:number = Session.getUserId(request);
                     return await Group.getUsersForSpecialityGroupFromUserId(_config, user_id);
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });
@@ -165,7 +166,7 @@ export class Group {
                     let user_id:number = Session.getUserId(request);
                     return await Group.getUsersForWorkingGroupFromUserId(_config, user_id);
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });
@@ -196,7 +197,7 @@ export class Group {
                 try {
                     return await Group.getVisibilityForGroupId(_config, parseInt(request.params['group_id']));
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });          
@@ -227,7 +228,7 @@ export class Group {
                 try {
                     return await Group.getFlowForGroupId(_config, parseInt(request.params['group_id']));
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });          
@@ -259,7 +260,7 @@ export class Group {
                 try {
                     return await Group.getLocalizationForGroupId(_config, parseInt(request.params['group_id']));
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });          

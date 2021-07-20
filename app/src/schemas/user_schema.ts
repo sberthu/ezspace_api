@@ -10,65 +10,72 @@ const UserSchema = {
             },
             "type": "array"
         },
-        "author_id": {
+        "birthday": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "company": {
             "type": "number"
-        },
-        "bus_access": {
-            "type": "string"
-        },
-        "content": {
-            "type": "string"
-        },
-        "coverage_picture": {
-            "items": {
-                "$ref": "#/definitions/PictureInterface"
-            },
-            "type": "array"
         },
         "created_date": {
             "type": "number"
         },
-        "hours": {
+        "email": {
+            "type": "string"
+        },
+        "employee_type": {
             "items": {
-                "$ref": "#/definitions/HourInterface"
+                "$ref": "#/definitions/TermInterface"
             },
             "type": "array"
+        },
+        "firstname": {
+            "type": "string"
+        },
+        "flow": {
+            "type": "number"
+        },
+        "flow_requested": {
+            "type": "boolean"
+        },
+        "function": {
+            "type": "string"
         },
         "id": {
             "type": "number"
         },
-        "import_id": {
-            "type": "string"
+        "job_type": {
+            "items": {
+                "$ref": "#/definitions/TermInterface"
+            },
+            "type": "array"
         },
-        "is_internal": {
-            "type": "boolean"
-        },
-        "label": {
-            "type": "string"
+        "last_access_date": {
+            "type": "number"
         },
         "localization": {
             "$ref": "#/definitions/LocalizationInterface"
         },
-        "manager_id": {
-            "type": "number"
-        },
-        "parking_access": {
+        "name": {
             "type": "string"
+        },
+        "nb_connexions": {
+            "type": "number"
         },
         "phone": {
             "type": "string"
         },
-        "pictures": {
+        "picture": {
             "items": {
                 "$ref": "#/definitions/PictureInterface"
             },
             "type": "array"
         },
-        "plain_address": {
-            "type": "string"
-        },
-        "price": {
-            "type": "string"
+        "roles": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
         },
         "services": {
             "items": {
@@ -76,34 +83,26 @@ const UserSchema = {
             },
             "type": "array"
         },
-        "subway_access": {
-            "type": "string"
+        "speciality_group_id": {
+            "type": "number"
         },
-        "timezone": {
-            "type": "string"
+        "standby": {
+            "type": "boolean"
         },
-        "tram_access": {
-            "type": "string"
-        },
-        "type": {
-            "items": {
-                "$ref": "#/definitions/TermInterface"
-            },
-            "type": "array"
-        },
-        "type_of_contract": {
-            "items": {
-                "$ref": "#/definitions/TermInterface"
-            },
-            "type": "array"
+        "status": {
+            "type": "boolean"
         },
         "updated_date": {
             "type": "number"
         },
-        "vote": {
-            "items": {
-            },
-            "type": "array"
+        "updates": {
+            "type": "string"
+        },
+        "visibility": {
+            "type": "boolean"
+        },
+        "working_group_id": {
+            "type": "number"
         }
     },
     "type": "object"

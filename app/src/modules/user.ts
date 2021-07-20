@@ -1,10 +1,12 @@
 import { FastifyRequest, FastifyReply, FastifyInstance, FastifyPluginAsync, FastifyPluginCallback } from "fastify";
 import { ConfigInterface } from "../interfaces/config_interface";
-import { boom } from 'boom';
 import { Tools } from "./tools";
 import { UserInterface } from "../interfaces/user_interface";
 import { LocalizationInterface } from "../interfaces/localization_interface";
 import { UserSchema } from "../schemas/user_schema";
+import { Session } from "./session";
+
+import Boom = require('boom');
 
 export class User {
 
@@ -34,6 +36,9 @@ export class User {
     public static async getUsers(_config:ConfigInterface): Promise<Array<number>> {
         return User.cleanUserIdArray(_config, await _config.redis.listSubKeys(`users`), 3, 5);
     }
+    public static async setUserVisibility(_config:ConfigInterface, user_id: number, visibility: boolean): Promise<any> {
+        return await _config.redis.setHashValue(`users:${user_id}:user`, 'visibility', visibility);
+    }
     public static registerRoutes(_config:ConfigInterface): void {
         _config.fastify.route({
             method: 'GET',
@@ -61,7 +66,7 @@ export class User {
                     const visibility:boolean = await User.getVisibilityForUserId(_config, user_id);
                     return {id:user_id, visibility: visibility};
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });              
@@ -91,7 +96,7 @@ export class User {
                     const flow:number = await User.getFlowForUserId(_config, user_id);
                     return {id:user_id, flow: flow};
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });              
@@ -122,7 +127,7 @@ export class User {
                     const localization:LocalizationInterface = await User.getLocalizationForUserId(_config, user_id);
                     return {id:user_id, lat: localization.lat, lng:localization.lng};
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });              
@@ -142,9 +147,11 @@ export class User {
             },
             handler: async (request: FastifyRequest, reply: any) => {
                 try {
-                    return await User.getUser(_config, parseInt(request.params['user_id']));
+                    const u:any = await User.getUser(_config, parseInt(request.params['user_id']));
+                    _config.fastify.log.info(`user:${JSON.stringify(u)}`);
+                    return u;
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });
@@ -166,7 +173,34 @@ export class User {
                 try {
                     return await User.getUsers(_config);
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
+                }
+            }
+        });
+        _config.fastify.route({
+            method: 'PATCH',
+            url: `${_config.root_uri}/user/visibility`,
+            schema: {
+                body: {
+                    required: ['visibility'],
+                    properties: {
+                        visibility: {type:"boolean"}
+                    }
+                },
+                response: {
+                    204: {
+                        type: 'null'
+                    }
+                }
+            },
+            handler: async (request: FastifyRequest, reply: any) => {
+                try {
+                    let user_id:number = Session.getUserId(request);
+                    let visibility:boolean = request.body['visibility'];
+                    await User.setUserVisibility(_config, user_id, visibility );
+                    return reply.statusCode = 204;                    
+                } catch (err) {
+                    throw Boom.boomify(err)
                 }
             }
         });

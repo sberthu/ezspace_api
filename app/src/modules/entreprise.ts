@@ -1,9 +1,10 @@
 import { FastifyRequest, FastifyReply, FastifyInstance, FastifyPluginAsync, FastifyPluginCallback } from "fastify";
 import { ConfigInterface } from "../interfaces/config_interface";
-import { boom } from 'boom';
 import { Tools } from "./tools";
 import { EntrepriseInterface } from "../interfaces/entreprise_interface";
 import { EntrepriseSchema } from "../schemas/entreprise_schema";
+
+import Boom = require('boom');
 
 export class Entreprise {
     protected static convertEntreprise(entreprise:any):EntrepriseInterface {
@@ -37,7 +38,7 @@ export class Entreprise {
                 try {
                     return await Entreprise.getEntreprise(_config, parseInt(request.params['entreprise_id']));
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });
@@ -59,7 +60,7 @@ export class Entreprise {
                 try {                    
                     return await Entreprise.getEntreprises(_config);
                 } catch (err) {
-                    throw boom.boomify(err)
+                    throw Boom.boomify(err)
                 }
             }
         });
