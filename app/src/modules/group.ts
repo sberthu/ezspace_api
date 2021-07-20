@@ -54,6 +54,14 @@ export class Group {
         }))
         return localizations;
     }
+    public static async setUpdateForGroupId(_config:ConfigInterface, author_id:number, group_id:number, keyname:string, value:any): Promise<Array<any>> {
+        const user_ids:Array<number> = await Group.getUsersForGroupId(_config, group_id);        
+        return await Promise.all(user_ids.map(async (user_id:number) => {
+            if (user_id != author_id) {
+                await User.setUpdateValue(_config, user_id, author_id, keyname, value);
+            }
+        }));
+    }
     public static registerRoutes(_config:ConfigInterface):void {
         _config.fastify.route({
             method: 'GET',

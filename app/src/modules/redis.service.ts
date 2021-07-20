@@ -10,10 +10,13 @@ export class RedisService {
   private redisClient: any;
 
   private async_hgetall:Function;
+  private async_del:Function;
   private async_get:Function;
   private async_set:Function;
+  private async_hget:Function;
   private async_hset:Function;
   private async_keys:Function;
+  private async_hkeys:Function;
 
   static getInstance(_config:ConfigInterface) {
     if (RedisService.instance == null) {
@@ -26,10 +29,13 @@ export class RedisService {
     this.config = _config;
     this.redisClient = redis.createClient(_config.redis_params.url);
     this.async_hgetall = promisify(this.redisClient.hgetall).bind(this.redisClient);    
+    this.async_del = promisify(this.redisClient.del).bind(this.redisClient);    
     this.async_get = promisify(this.redisClient.get).bind(this.redisClient);    
     this.async_set = promisify(this.redisClient.set).bind(this.redisClient);    
+    this.async_hget = promisify(this.redisClient.hget).bind(this.redisClient);    
     this.async_hset = promisify(this.redisClient.hset).bind(this.redisClient);    
     this.async_keys = promisify(this.redisClient.keys).bind(this.redisClient);    
+    this.async_hkeys = promisify(this.redisClient.hkeys).bind(this.redisClient);    
   }
 
   public setValue(path: string, value: any, expire: any = null): Promise<any> {
@@ -76,9 +82,30 @@ export class RedisService {
       throw e;
     }
   }
+  public listHashKeys(path: string): Promise<any> {
+    try {
+      return this.async_hkeys(`${this.computeFullKey(path)}`);
+    } catch (e) {
+      throw e;
+    }
+  }
   public async getHashSet(path: string): Promise<any> {
     try {
       return await this.async_hgetall(this.computeFullKey(path));
+    } catch (e) {
+      throw e;
+    }
+  }
+  public async getHashString(path: string, hash:string): Promise<any> {
+    try {
+      return await this.async_hget(this.computeFullKey(path), hash);
+    } catch (e) {
+      throw e;
+    }
+  }
+  public async delKey(path: string): Promise<any> {
+    try {
+      return await this.async_del(this.computeFullKey(path));
     } catch (e) {
       throw e;
     }
