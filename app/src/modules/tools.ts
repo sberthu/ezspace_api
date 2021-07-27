@@ -21,6 +21,9 @@ export class Tools {
         }
         return obj;
     }
+    public static removeDuplicatesAndNotNull(tablo:Array<any>):Array<any> {
+        return [...new Set(tablo)].filter(id => null != id);
+    }    
     public static cleanRedisIdArray(szids:Array<string>, offset:number, expected_size:number):Array<number> {
         const ids:Array<number> = szids.map(id => {
             if (id != null) {
@@ -33,7 +36,7 @@ export class Tools {
                 }
             }
         });
-        return ids.filter(id => null != id);
+        return Tools.removeDuplicatesAndNotNull(ids);
     }    
     public static convertBase(value, from_base, to_base) {
         var range = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -60,6 +63,7 @@ export class Tools {
 
         let ms = Math.round((now - start_date) / 1000);
         let id:number = ms * 100 + Math.round(Math.random() * 100);
+        console.log(config.start_date);
         let szid:string  = this.convertBase(id, 10, 36);
         return szid;
     }
@@ -88,5 +92,9 @@ export class Tools {
         const duration = now - start_date
         //console.log(`duration: ${duration} max:${max_duration}, end:${new Date(new Date().valueOf() + max_duration)}`)
         return (duration > max_duration)
+    }
+    public static hasRole(expected:string, role_or_roles:any):boolean {
+        const roles:Array<string> = Array.isArray(role_or_roles) ? role_or_roles: [role_or_roles];
+        return -1 != roles.findIndex(e => e==expected);
     }
 }

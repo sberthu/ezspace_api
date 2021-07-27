@@ -28,13 +28,11 @@ export class User {
         let i:number = 0;
         for (; i<users.length; i++) {
             const name:string = await _config.redis.getHashString(`users:${users[i]}:user`, 'name');
-            console.log(name);
             if (username == name ) {
                 id = await _config.redis.getHashString(`users:${users[i]}:user`, 'id');
                 break;
             }
         }
-        console.log('id:' + id);
         return id;
     }
     public static async getVisibilityForUserId(_config:ConfigInterface,user_id: number): Promise<boolean> {
@@ -457,7 +455,7 @@ export class User {
                 try {
                     let user_id:number = Session.getUserId(request);
                     await User.setFlow(_config, user_id, request.body['flow']);
-                    return reply.statusCode = 204;                    
+                    return reply.statusCode = 204;           
                 } catch (err) {
                     throw Boom.boomify(err)
                 }

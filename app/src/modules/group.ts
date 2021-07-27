@@ -15,14 +15,14 @@ export class Group {
         return Tools.parseProperties(group, ['is_private']);
     }
     public static async getGroup(_config:ConfigInterface,group_id:number): Promise<GroupInterface> {
-        const group = await _config.redis.getHashSet(`groups:${group_id}:group`);
+        const group = await _config.redis.getHashSet(`group:${group_id}:group`);
         return Group.convertGroup(group);
     }
     public static async getGroups(_config:ConfigInterface): Promise<Array<number>> {
-        return  Tools.cleanRedisIdArray(await _config.redis.listSubKeys(`groups`), 3, 5);
+        return  Tools.cleanRedisIdArray(await _config.redis.listSubKeys(`group`), 3, 5);
     }
     public static async getUsersForGroupId(_config:ConfigInterface,group_id:number): Promise<Array<number>> {
-        return  Tools.cleanRedisIdArray(await _config.redis.listSubKeys(`groups:${group_id}:users`), 5, 6);
+        return  Tools.cleanRedisIdArray(await _config.redis.listSubKeys(`group:${group_id}:users`), 5, 6);
     }
     public static async getUsersForSpecialityGroupFromUserId(_config:ConfigInterface,user_id:number): Promise<Array<number>> {
         const user:UserInterface = await User.getUser(_config, user_id);
@@ -64,6 +64,34 @@ export class Group {
                 await User.setUpdateValue(_config, user_id, author_id, keyname, value);
             }
         }));
+    }
+    public static async getGroupIdsForGroupType(_config:ConfigInterface, group_type: string): Promise<Array<number>> {
+        let group_ids:Array<number> = await Group.getGroups(_config);
+        group_ids = await Promise.all(group_ids.map(async (group_id:number) => {
+            const group:GroupInterface = await Group.getGroup(_config, group_id);
+            const ret:boolean = Tools.hasRole(group_type, group.role)
+            return ret ? group_id:null;
+        }));
+        return group_ids.filter(id => null != id);
+    }    
+    public static async getManagerIdsForGroupType(_config:ConfigInterface, group_type: string): Promise<Array<number>> {
+        const group_ids:Array<number> = await Group.getGroupIdsForGroupType(_config, group_type);
+        let manager_ids:Array<number> = [];
+        await Promise.all(group_ids.map(async (group_id:number) => {
+            const group:GroupInterface = await Group.getGroup(_config, group_id);
+            manager_ids.push(group.manager_id);
+            manager_ids.push(group.vice_manager_id);
+        }));
+        return manager_ids;
+    }
+    public static async getUserIdsForGroupType(_config:ConfigInterface, group_type: string): Promise<Array<number>> {
+        const group_ids:Array<number> = await Group.getGroupIdsForGroupType(_config, group_type);
+        let user_ids:Array<number> = [];
+        await Promise.all(group_ids.map(async (group_id:number) => {
+            const group_user_ids:Array<number> = await Group.getUsersForGroupId(_config, group_id);
+            user_ids = user_ids.concat(group_user_ids);
+        }));
+        return user_ids;
     }
     public static registerRoutes(_config:ConfigInterface):void {
         _config.fastify.route({
@@ -276,7 +304,7 @@ export class Group {
             }
         });
         _config.fastify.route({
-            method: 'PATCH',
+            method: 'POST',
             url: `${_config.root_uri}/group/:group_id/flowrequest`,
             schema: {
                 params: {

@@ -1,32 +1,32 @@
-import {ConfigInterface} from '../interfaces/config_interface'
+import { ConfigInterface } from '../interfaces/config_interface'
 
 let _debug = true
 let _timestamp = new Date()
 
-const config = function (): ConfigInterface {
-    return {
+export const config  = () => {
+	return {
 		trace: text => {
 			if (_debug) console.log(JSON.stringify(text, null, 2));
 		},
-		fastify:null,
+		fastify: null,
 		is_production: (process.env.NODE_ENV === "production"),
-		debug : _debug,
+		debug: _debug,
 		timestamp: _timestamp,
 		port: 8000,
 		api_version: "1.0.0",
 		root_uri: '/be-link/api/v4',
 		start_date: "2019-12-16",
 		min_user_id: 1164,
-		session_max_duration_in_seconds: 3*60*60*1000,
-		redis:null,
+		session_max_duration_in_seconds: 3 * 60 * 60 * 1000,
+		redis: null,
 		redis_params: {
 			active: true,
 			prefix: 'belink:entities',
 			url: 'redis://redis:6379'
 		},
 		user: {
-			id:null,
-			scopes:[]
+			id: null,
+			scopes: []
 		},
 		jwt: {
 			private: `-----BEGIN RSA PRIVATE KEY-----
@@ -95,20 +95,19 @@ IqC34E1UPqgFFezNL7qAQiyhnnHMx/KZSQCsIPT5B89DZxb0954tC0wC8g+u3dvM
 IgZ5qO9qUaMOf/kWJubTkesCAwEAAQ==
 -----END PUBLIC KEY-----`,
 			options: {
-				issuer:  "Mylan",
-				subject:  "twicors-presentation",
-				audience:  'twicors-presenteer',
-				expiresIn:  "3h",
-				algorithm:  "RS256"
+				issuer: "Mylan",
+				subject: "twicors-presentation",
+				audience: 'twicors-presenteer',
+				expiresIn: "3h",
+				algorithm: "RS256"
 			},
 			verify_options: {
-				issuer:  "Mylan",
-				subject:  "twicors-presentation",
-				audience:  'twicors-presenteer',
-				expiresIn:  "3h",
-				algorithms:  ["RS256"]
-			}	
+				issuer: "Mylan",
+				subject: "twicors-presentation",
+				audience: 'twicors-presenteer',
+				expiresIn: "3h",
+				algorithms: ["RS256"]
+			}
 		}
 	}
 }
-export { config }
