@@ -12,17 +12,17 @@ export const config  = () => {
 		is_production: (process.env.NODE_ENV === "production"),
 		debug: _debug,
 		timestamp: _timestamp,
-		port: 8000,
+		port: parseInt(process.env.NODE_PORT),
 		api_version: "1.0.0",
 		root_uri: '/be-link/api/v4',
 		start_date: "2019-12-16",
-		min_user_id: 1164,
+		min_user_id: parseInt(process.env.MIN_USER_ID),
 		session_max_duration_in_seconds: 3 * 60 * 60 * 1000,
 		redis: null,
 		redis_params: {
 			active: true,
-			prefix: 'belink:entities',
-			url: 'redis://redis:6379'
+			prefix: process.env.REDIS_PREFIX,
+			url: `redis://redis:6379`
 		},
 		user: {
 			id: null,

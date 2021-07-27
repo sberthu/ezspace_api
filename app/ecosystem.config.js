@@ -1,7 +1,7 @@
 module.exports = {
 	apps : [{
 	  name        : "be-link",
-	  script      : "./src/index.js",
+	  script      : "./dist/index.js",
 	  watch       : true,
 	  instances  : 1,
 	  exec_mode  : "cluster",
