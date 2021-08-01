@@ -17,13 +17,17 @@
     "fastify-plugin": "^3.0.0",
     "fastify-swagger": "^4.8.3",
     "jsonwebtoken": "^8.5.1",
+    "jsrsasign": "^10.3.0",
     "nodemon": "^2.0.12",
+    "phpass": "^0.1.1",
     "redis": "^3.1.2"
   },
   "devDependencies": {
     "@types/bcrypt": "3.0.0",
     "@types/boom": "^7.3.1",
     "@types/chai": "^4.2.21",
+    "@types/jsonwebtoken": "^8.5.4",
+    "@types/jsrsasign": "^8.0.13",
     "@types/mocha": "^8.2.3",
     "@types/node": "^12.12.31",
     "@types/redis": "^2.8.31",

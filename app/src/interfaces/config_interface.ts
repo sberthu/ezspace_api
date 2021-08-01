@@ -24,6 +24,12 @@ export interface ConfigInterface {
 		scopes:Array<string>
 	}
 	jwt: {
+		refresh_token_timeout:number,
+		client_id:string,
+		client_secret: string,
+		alg: string,
+		kty: string,
+		kid:string,
 		private: string,
 		public: string,
 		options: {

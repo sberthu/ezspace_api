@@ -27,8 +27,14 @@ export const config  = () => {
 		user: {
 			id: null,
 			scopes: []
-		},
+		},		
 		jwt: {
+			refresh_token_timeout: 12 * 60 * 60 * 1000,
+			client_id: 'a00a6116-7f44-44e2-a32b-a19aa5e36498',
+			client_secret: 'aserra',
+			alg:'RS256',
+			kty: 'RSA',
+			kid: 'SHtEgo4eoMJrhHHW0KuJG95Ev21cLNUuprHKee389B2TBfVyT3',
 			private: `-----BEGIN RSA PRIVATE KEY-----
 MIIJKAIBAAKCAgEAtAmZF+yqTPK50+CEtvsHer+ZcJIiUeVgGSOPk/otXQJwjcs1
 1V83cMhb0frNTad2nXn2BE+BspZcHeBhwGc/WPqSt+HJYC+N32YDLgwjlDpsjfkJ
@@ -95,17 +101,17 @@ IqC34E1UPqgFFezNL7qAQiyhnnHMx/KZSQCsIPT5B89DZxb0954tC0wC8g+u3dvM
 IgZ5qO9qUaMOf/kWJubTkesCAwEAAQ==
 -----END PUBLIC KEY-----`,
 			options: {
-				issuer: "Mylan",
-				subject: "twicors-presentation",
-				audience: 'twicors-presenteer',
-				expiresIn: "3h",
+				issuer: "be-link",
+				subject: "be-link-token",
+				audience: 'be-link-collaborator',
+				expiresIn: "12h",
 				algorithm: "RS256"
 			},
 			verify_options: {
-				issuer: "Mylan",
-				subject: "twicors-presentation",
-				audience: 'twicors-presenteer',
-				expiresIn: "3h",
+				issuer: "be-link",
+				subject: "be-link-token",
+				audience: 'be-link-collaborator',
+				expiresIn: "12h",
 				algorithms: ["RS256"]
 			}
 		}

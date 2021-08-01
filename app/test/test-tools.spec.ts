@@ -131,36 +131,36 @@ describe('Tools', () => {
 			expect(Tools.cleanRedisIdArray(ids, 3, 5)).to.be.deep.equal(expected);
 		});
 	});
-	describe('check removeDuplicatesAndNotNull', () => {
+	describe('check removeDuplicatesOrNull', () => {
 		it('with no duplicates string', () => {
 			const tablo: Array<string> = ['one', 'two'];
 			const expected: Array<string> = ['one', 'two'];
-			expect(Tools.removeDuplicatesAndNotNull(tablo)).to.be.deep.equal(expected);
+			expect(Tools.removeDuplicatesOrNull(tablo)).to.be.deep.equal(expected);
 		});
 		it('with no duplicates number', () => {
 			const tablo: Array<number> = [1000,2000];
 			const expected: Array<number> = [1000,2000];
-			expect(Tools.removeDuplicatesAndNotNull(tablo)).to.be.deep.equal(expected);
+			expect(Tools.removeDuplicatesOrNull(tablo)).to.be.deep.equal(expected);
 		});
 		it('with duplicates string', () => {
 			const tablo: Array<string> = ['one', 'two', 'one'];
 			const expected: Array<string> = ['one', 'two'];
-			expect(Tools.removeDuplicatesAndNotNull(tablo)).to.be.deep.equal(expected);
+			expect(Tools.removeDuplicatesOrNull(tablo)).to.be.deep.equal(expected);
 		});
 		it('with duplicates number', () => {
 			const tablo: Array<number> = [1000,2000, 1000];
 			const expected: Array<number> = [1000,2000];
-			expect(Tools.removeDuplicatesAndNotNull(tablo)).to.be.deep.equal(expected);
+			expect(Tools.removeDuplicatesOrNull(tablo)).to.be.deep.equal(expected);
 		});
 		it('with empty and null number', () => {
 			const tablo: Array<number> = [1000,,2000, 1000, null];
 			const expected: Array<number> = [1000,2000];
-			expect(Tools.removeDuplicatesAndNotNull(tablo)).to.be.deep.equal(expected);
+			expect(Tools.removeDuplicatesOrNull(tablo)).to.be.deep.equal(expected);
 		});
 		it('with empty and null string', () => {
 			const tablo: Array<string> = ['one', ,'two', null, 'one'];
 			const expected: Array<string> = ['one', 'two'];
-			expect(Tools.removeDuplicatesAndNotNull(tablo)).to.be.deep.equal(expected);
+			expect(Tools.removeDuplicatesOrNull(tablo)).to.be.deep.equal(expected);
 		});
 	});
 });

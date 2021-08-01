@@ -50,12 +50,12 @@ export class Group {
         const user_ids:Array<number> = await Group.getUsersForGroupId(_config, group_id);
         const localizations:Array<any> = await Promise.all(user_ids.map(async (user_id:number) => {
             const localization:LocalizationInterface = await User.getLocalizationForUserId(_config, user_id);
-            return {id:user_id, lat:localization.lat, lng:localization.lng};
-        }))
-        return localizations;
+            return (localization.lat && localization.lng ? {id:user_id, lat:localization.lat, lng:localization.lng} : null);
+        }))        
+        return Tools.removeDuplicatesOrNull(localizations);
     }
-    public static async setFlowRequest(_config:ConfigInterface, user_id: number): Promise<any> {
-        return await User.setUpdates(_config, user_id, 'flow_requested', `${Date.now()}`);
+    public static async setFlowRequestForGroupId(_config:ConfigInterface, group_id:number, user_id: number): Promise<any> {
+        return await User.setUpdatesForGroupId(_config, user_id, group_id, 'flow_requested', `${Date.now()}`);
     }    
     public static async setUpdateForGroupId(_config:ConfigInterface, author_id:number, group_id:number, keyname:string, value:any): Promise<Array<any>> {
         const user_ids:Array<number> = await Group.getUsersForGroupId(_config, group_id);        
@@ -321,7 +321,9 @@ export class Group {
             },
             handler: async (request: FastifyRequest, reply: any) => {
                 try {
-                    await Group.setFlowRequest(_config, parseInt(request.params['group_id']));
+                    let user_id:number = Session.getUserId(request);
+                    console.log('user_id:'+user_id);
+                    await Group.setFlowRequestForGroupId(_config, parseInt(request.params['group_id']), user_id);
                     return reply.statusCode = 204;                    
                 } catch (err) {
                     throw Boom.boomify(err)

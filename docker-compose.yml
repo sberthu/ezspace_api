@@ -5,12 +5,8 @@ services:
     #build: .
     user: "root"
     restart: always
-    environment:
-      - "NODE_ENV=${NODE_ENV}"
-      - "REDIS_PREFIX=${REDIS_PREFIX}"
-      - "REDIS_PASSWORD=${REDIS_PASSWORD}"
-      - "MIN_USER_ID=${MIN_USER_ID}"
-      - "NODE_PORT=${NODE_PORT}"
+    env_file:
+      - ./.env
     volumes:
       - ./app:/home/node/app/
       - './.bashrc:/root/.bashrc'

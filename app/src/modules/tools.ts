@@ -21,7 +21,7 @@ export class Tools {
         }
         return obj;
     }
-    public static removeDuplicatesAndNotNull(tablo:Array<any>):Array<any> {
+    public static removeDuplicatesOrNull(tablo:Array<any>):Array<any> {
         return [...new Set(tablo)].filter(id => null != id);
     }    
     public static cleanRedisIdArray(szids:Array<string>, offset:number, expected_size:number):Array<number> {
@@ -36,7 +36,7 @@ export class Tools {
                 }
             }
         });
-        return Tools.removeDuplicatesAndNotNull(ids);
+        return Tools.removeDuplicatesOrNull(ids);
     }    
     public static convertBase(value, from_base, to_base) {
         var range = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');

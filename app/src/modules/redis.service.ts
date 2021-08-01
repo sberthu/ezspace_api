@@ -75,9 +75,9 @@ export class RedisService {
       throw e;
     }
   }  
-  public listSubKeys(path: string): Promise<any> {
+  public listSubKeys(path: string, subpath:string = ':*'): Promise<any> {
     try {
-      return this.async_keys(`${this.computeFullKey(path)}:*`);
+      return this.async_keys(`${this.computeFullKey(path)}${subpath}`);
     } catch (e) {
       throw e;
     }

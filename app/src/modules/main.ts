@@ -10,6 +10,7 @@ import { Host } from "./host";
 import { Space } from "./space";
 import { Entreprise } from "./entreprise";
 import { Alert } from "./alert";
+import { OAuth } from "./oauth";
 
 /*const cors = require('fastify-cors');
 */
@@ -44,6 +45,7 @@ export class Main {
     Space.registerRoutes(_config);
     Entreprise.registerRoutes(_config);
     Alert.registerRoutes(_config);
+    OAuth.registerRoutes(_config);
    /*  fastify.route({
       method: 'OPTIONS',
       path: '*'

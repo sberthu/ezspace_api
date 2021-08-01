@@ -23,11 +23,11 @@ export class User {
         return User.convertUser(user);
     }
     public static async getUserByUsername(_config:ConfigInterface,username: string): Promise<number> {
-        const users:Array<number> = Tools.cleanRedisIdArray(await _config.redis.listSubKeys(`users:*`), 3, 5);
+        const users:Array<number> = Tools.cleanRedisIdArray(await _config.redis.listSubKeys(`users`), 3, 5);
         let id:number = -1;
         let i:number = 0;
         for (; i<users.length; i++) {
-            const name:string = await _config.redis.getHashString(`users:${users[i]}:user`, 'name');
+            const name:string = await _config.redis.getHashString(`users:${users[i]}:user`, 'username');
             if (username == name ) {
                 id = await _config.redis.getHashString(`users:${users[i]}:user`, 'id');
                 break;
@@ -63,7 +63,7 @@ export class User {
         return user.localization;
     }
     public static async getUsers(_config:ConfigInterface): Promise<Array<number>> {
-        return User.cleanUserIdArray(_config, await _config.redis.listSubKeys(`users`), 3, 5);
+        return User.cleanUserIdArray(_config, await _config.redis.listSubKeys(`users`, ':*:user'), 3, 5);
     }
     public static async setUserVisibility(_config:ConfigInterface, user_id: number, visibility: boolean): Promise<any> {
         return await Promise.all([
@@ -100,6 +100,10 @@ export class User {
         return await Promise.all([,            
             await Group.setUpdateForGroupId(_config, author_id,user.speciality_group_id, keyName, value),
             await Group.setUpdateForGroupId(_config, author_id,user.working_group_id, keyName, value)]);
+    }
+    public static async setUpdatesForGroupId(_config:ConfigInterface, author_id:number, group_id:number, keyName: string, value: any): Promise<any> {
+        const user:UserInterface = await User.getUser(_config, author_id);
+        return await Group.setUpdateForGroupId(_config, author_id, group_id, keyName, value);
     }
     public static async setUpdateValue(_config:ConfigInterface, user_id:number, author_id:number, keyName: string, value: any): Promise<any> {
         let updates:any = await _config.redis.getValue(`users:${user_id}:updates`);

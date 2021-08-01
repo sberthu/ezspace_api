@@ -41,11 +41,12 @@ export class Alert {
             user_ids = user_ids.concat(manager_ids);
             return group_type;
         }));
-        user_ids = Tools.removeDuplicatesAndNotNull(user_ids);
+        user_ids = Tools.removeDuplicatesOrNull(user_ids);
         return user_ids;
     }
     public static async setAlertForUserId(_config:ConfigInterface, user_id:number, params:Object):Promise<Object> {
         const user_ids:Array<number> = await Alert.getUserIdsFromAlertTypeAndUserId(_config, params['type'], user_id);
+        console.log(user_ids);
         return await Promise.all(user_ids.map(async (user_id:number) => {
             
         }));        
