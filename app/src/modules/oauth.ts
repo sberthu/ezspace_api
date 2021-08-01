@@ -6,6 +6,8 @@ import { Token } from "./token";
 import Boom = require('boom');
 import { resolve } from "dns";
 import { rejects } from "assert";
+import { User } from "./user";
+import { UserInterface } from "src/interfaces/user_interface";
 
 export class OAuth {
     public static async createToken(_config:ConfigInterface, encrypted_authentication: string):Promise<Object> {
@@ -22,6 +24,13 @@ export class OAuth {
         return new Promise((resolve, reject) => {
             resolve(Token.getJwk(_config));
         });
+    }
+    public static async generatePasswordHash(_config:ConfigInterface):Promise<any> {
+        const user_ids:Array<Number> = await User.getUsers(_config);
+        return await Promise.all(user_ids.map(async (user_id:number) => {
+            const user:UserInterface = await User.getUser(_config, user_id);
+            return await Token.computeAndSaveHash(_config, user_id, user.username, user.username);
+        }))     
     }
     public static registerRoutes(_config: ConfigInterface): void {
         _config.fastify.route({
@@ -55,7 +64,6 @@ export class OAuth {
             handler: async (request: FastifyRequest, reply: any) => {
                 try {
                     const jwk = await OAuth.getJwk(_config);
-                    console.log(jwk)
                     return jwk
                 } catch (err) {
                     throw Boom.boomify(err)
@@ -121,6 +129,28 @@ export class OAuth {
                     const refresh_token:string = request.body['refresh_token'];
                     const authentication:string = request.body['authentication'];
                     return OAuth.refreshToken(_config, authentication, refresh_token);
+                } catch (err) {
+                    throw Boom.boomify(err)
+                }
+            }
+        });
+        _config.fastify.route({
+            method: 'GET',
+            url: `${_config.root_uri}/oauth/generate`,
+            schema: {
+                body: {
+                    type: 'null'
+                },
+                response: {
+                    200: {
+                        type: 'array',
+                        items: { type:'string'}
+                    }
+                }
+            },
+            handler: async (request: FastifyRequest, reply: any) => {
+                try {
+                    return await OAuth.generatePasswordHash(_config);
                 } catch (err) {
                     throw Boom.boomify(err)
                 }

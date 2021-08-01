@@ -1,5 +1,3 @@
-import { boolean } from "yargs";
-
 export interface GroupInterface {
     id: number;
     label: string;

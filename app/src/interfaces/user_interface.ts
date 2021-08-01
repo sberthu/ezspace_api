@@ -6,6 +6,7 @@ import { TermInterface } from "./term_interface"
 export class UserInterface {
     status:boolean;
     id:number;
+    username:string;
     firstname:string;
     name:string;
     email:string;

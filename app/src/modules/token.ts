@@ -7,24 +7,51 @@ import { resolve } from 'dns';
 import { rejects } from 'assert';
 
 export class Token {
-    public static create(_config:ConfigInterface, encrypted_authentication:string):Object {
+    public static computeHash(username:string, password:string):string {
+        const PasswordHash = require('phpass').PasswordHash;
+        const passwordHash = new PasswordHash();
+        const hash:string = passwordHash.hashPassword(password);
+        const hashb64:string = rs.stob64(hash);
+        console.log(hashb64);
+        return hashb64;
+    }
+    public static async computeAndSaveHash(_config:ConfigInterface, user_id:number, username:string, password:string):Promise<any> {
+        const hashb64:string = Token.computeHash(username, password);
+        await _config.redis.setValue(`accounts:${hashb64}`, JSON.stringify({user_id, username}));
+        return hashb64;
+    }
+    public static async create(_config:ConfigInterface, encrypted_authentication:string):Promise<Object> {
         let tohex:string = rs.b64utohex(encrypted_authentication);
         const authentication:string = rs.KJUR.crypto.Cipher.decrypt(tohex, rs.KEYUTIL.getKey(_config.jwt.private) as rs.RSAKey, "RSA");
         const authent_obj = JSON.parse(authentication);
         console.log(authent_obj);
         if (authent_obj.client_id !== _config.jwt.client_id || authent_obj.client_secret !=  _config.jwt.client_secret) {
-            throw Tools.NotFoundException("client_id or client_secret not found")
+            throw Tools.NotFoundException("client_id or client_secret not found");
         }
+        //const hashKey = Token.computeHash(authent_obj.username, authent_obj.password);
+        
+        const PasswordHash = require('phpass').PasswordHash;
+        const passwordHash = new PasswordHash();
 
-        var PasswordHash = require('phpass').PasswordHash;
-        var passwordHash = new PasswordHash();
-        var password = 'avillemin';
-        var hash = passwordHash.hashPassword(password);
-        var success = passwordHash.checkPassword(password, '$S$E5km3d.O3Nqz05a8IzHZ87X.Ijyz7LLnb7TRptyDUC5E5z3DPqCm');
-        console.log(hash);
-        console.log(success);
+        const hashes:Array<string> = await _config.redis.listSubKeys(`accounts`);        
+        let i:number=0;
+        let user_id:number | null = null;
 
-        const user_id:number = 1133;
+        for (;i<hashes.length; i++) {
+            const hashb64:string = hashes[i].split(':')[3];
+            const hash:string = rs.b64utos(hashb64); 
+            const success:boolean = passwordHash.checkPassword(authent_obj.password, hash);
+            if (success) {
+                const data:any = JSON.parse(await _config.redis.getValue(`accounts:${hashb64}`));
+                if (data.username === authent_obj.username) {
+                    user_id = data.user_id;
+                    break;
+                }
+            }
+        }
+        if (!user_id) {
+            throw Tools.NotFoundException("credentials not found");
+        }
         const token:string = jwt.sign({ user_id:user_id }, _config.jwt.private, _config.jwt.options as jwt.SignOptions);
         const refresh_token:string = jwt.sign({ user_id:user_id }, _config.jwt.private, {..._config.jwt.options, expiresIn: _config.jwt.refresh_token_timeout} as jwt.SignOptions);
         return {   
